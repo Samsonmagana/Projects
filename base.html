@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}IT Helpdesk{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  {% if current_user %}
+  <header class="topbar">
+    <a href="{{ url_for('dashboard') }}" class="logo">IT Depot</a>
+    <nav>
+      <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('assets') }}">Assets</a>
+      <a href="{{ url_for('tickets') }}">Tickets</a>
+      {% if current_user['role'] == 'admin' %}
+      <a href="{{ url_for('audit_log') }}" style="color: var(--danger); font-weight: bold;">Audit Log</a>
+      {% endif %}
+    </nav>
+    <div class="who">
+      {{ current_user['name'] }} · {{ current_user['role'] }}
+      <a class="logout" href="{{ url_for('logout') }}">Sign out</a>
+    </div>
+  </header>
+  {% endif %}
+
+  <main class="wrap">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+        <div class="flash {{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

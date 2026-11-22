@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<a href="{{ url_for('tickets') }}">&larr; Back to tickets</a>
+<h1 style="margin-top: 1rem;">#{{ ticket['id'] }}: {{ ticket['title'] }}</h1>
+<p class="muted">Logged by {{ ticket['created_by_name'] }} on {{ ticket['created_at'].strftime('%Y-%m-%d') }}</p>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: start;">
+  <div>
+    <section class="panel">
+      <h3>Description</h3>
+      <p>{{ ticket['description'] or 'No description provided.' }}</p>
+      {% if ticket['asset_tag'] %}<p><strong>Asset:</strong> {{ ticket['asset_tag'] }}</p>{% endif %}
+    </section>
+    <section class="panel">
+      <h3>Activity & Notes</h3>
+      <form method="post" style="margin-bottom: 1.5rem;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="add_note">
+        <textarea name="note" rows="2" style="width: 100%; padding: 0.5rem; border: 1px solid var(--line); border-radius: 8px;" placeholder="Add an update..." required></textarea>
+        <button class="btn" type="submit" style="margin-top: 0.5rem;">Add Note</button>
+      </form>
+      {% for log in logs %}
+      <div style="border-bottom: 1px solid var(--line); padding-bottom: 0.8rem; margin-bottom: 0.8rem;">
+        <strong>{{ log['author_name'] }}</strong> <span class="muted" style="font-size: 0.85rem;">- {{ log['created_at'].strftime('%Y-%m-%d %H:%M') }}</span>
+        <p style="margin-top: 0.3rem;">{{ log['note'] }}</p>
+      </div>
+      {% endfor %}
+    </section>
+  </div>
+
+  <aside class="panel">
+    <h3>Manage Ticket</h3>
+    {% if current_user['role'] == 'admin' or current_user['id'] == ticket['created_by'] %}
+    <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--line); padding-bottom: 1.5rem;">
+      <a href="{{ url_for('edit_ticket', id=ticket['id']) }}" class="btn" style="flex: 1; text-align: center; background: var(--muted);">Edit</a>
+      <form method="post" action="{{ url_for('delete_ticket', id=ticket['id']) }}" style="flex: 1;" onsubmit="return confirm('Delete this ticket?');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn" type="submit" style="width: 100%; background: var(--danger);">Delete</button>
+      </form>
+    </div>
+    {% endif %}
+
+    {% if current_user['role'] in ('admin', 'technician') %}
+    <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="action" value="update_status">
+      
+      <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Status</label>
+      <select name="status" style="width: 100%; padding: 0.5rem; margin-bottom: 1rem; border: 1px solid var(--line);">
+        <option value="open" {% if ticket['status'] == 'open' %}selected{% endif %}>Open</option>
+        <option value="in_progress" {% if ticket['status'] == 'in_progress' %}selected{% endif %}>In Progress</option>
+        <option value="resolved" {% if ticket['status'] == 'resolved' %}selected{% endif %}>Resolved</option>
+        <option value="closed" {% if ticket['status'] == 'closed' %}selected{% endif %}>Closed</option>
+      </select>
+
+      <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Assigned Tech</label>
+      <select name="assigned_to" style="width: 100%; padding: 0.5rem; margin-bottom: 1rem; border: 1px solid var(--line);">
+        <option value="">Unassigned</option>
+        {% for tech in techs %}<option value="{{ tech['id'] }}" {% if ticket['assigned_to'] == tech['id'] %}selected{% endif %}>{{ tech['name'] }}</option>{% endfor %}
+      </select>
+      <button class="btn" type="submit" style="width: 100%;">Update Ticket</button>
+    </form>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

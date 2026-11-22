@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Assets</h1>
+{% if current_user['role'] in ('admin', 'technician') %}
+<section class="panel">
+  <h2>Add an asset</h2>
+  <form method="post" class="row">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input name="tag" placeholder="Tag (LPT-005)" required>
+    <input name="type" placeholder="Type (laptop)" required>
+    <input name="make" placeholder="Make">
+    <input name="model" placeholder="Model">
+    <input name="serial" placeholder="Serial">
+    <input name="location" placeholder="Location">
+    <select name="status">
+      <option value="in_storage">In storage</option>
+      <option value="in_use">In use</option>
+      <option value="repair">Repair</option>
+      <option value="retired">Retired</option>
+    </select>
+    <button class="btn" type="submit">Add</button>
+  </form>
+</section>
+{% endif %}
+<section class="panel">
+  <table>
+    <thead><tr><th>Tag</th><th>Type</th><th>Make / Model</th><th>Serial</th><th>Assigned</th><th>Location</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for a in assets %}
+      <tr>
+        <td><strong>{{ a['tag'] }}</strong></td>
+        <td>{{ a['type'] }}</td>
+        <td>{{ a['make'] or '' }} {{ a['model'] or '' }}</td>
+        <td class="mono">{{ a['serial'] or '-' }}</td>
+        <td>{{ a['assigned_name'] or '-' }}</td>
+        <td>{{ a['location'] or '-' }}</td>
+        <td><span class="pill {{ a['status'] }}">{{ a['status'].replace('_',' ') }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

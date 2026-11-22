@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Sign Up{% endblock %}
+{% block content %}
+<div class="login-card">
+  <h1>Create an Account</h1>
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Full Name <input type="text" name="name" required></label>
+    <label>Email <input type="email" name="email" required></label>
+    <label>Password <input type="password" name="password" required></label>
+    <label>Role
+      <select name="role" style="width: 100%; padding: 0.6rem; margin-top: 0.3rem; border: 1px solid var(--line); border-radius: 8px;">
+        <option value="staff">Staff</option>
+        <option value="technician">Technician</option>
+      </select>
+    </label>
+    <button class="btn" type="submit" style="width: 100%;">Sign Up</button>
+  </form>
+</div>
+{% endblock %}

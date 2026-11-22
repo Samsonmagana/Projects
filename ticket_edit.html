@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Edit Ticket #{{ ticket['id'] }}</h1>
+<section class="panel">
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label style="display:block; margin-bottom:1rem;">Title
+      <input type="text" name="title" value="{{ ticket['title'] }}" required style="width:100%; padding:0.5rem; margin-top:0.3rem; border:1px solid var(--line);">
+    </label>
+    <label style="display:block; margin-bottom:1rem;">Priority
+      <select name="priority" style="width:100%; padding:0.5rem; margin-top:0.3rem; border:1px solid var(--line);">
+        <option value="low" {% if ticket['priority']=='low' %}selected{% endif %}>Low</option>
+        <option value="medium" {% if ticket['priority']=='medium' %}selected{% endif %}>Medium</option>
+        <option value="high" {% if ticket['priority']=='high' %}selected{% endif %}>High</option>
+        <option value="urgent" {% if ticket['priority']=='urgent' %}selected{% endif %}>Urgent</option>
+      </select>
+    </label>
+    <label style="display:block; margin-bottom:1rem;">Description
+      <textarea name="description" rows="5" style="width:100%; padding:0.5rem; margin-top:0.3rem; border:1px solid var(--line);">{{ ticket['description'] }}</textarea>
+    </label>
+    <button class="btn" type="submit">Save Changes</button>
+    <a href="{{ url_for('ticket_detail', id=ticket['id']) }}" style="margin-left: 1rem;">Cancel</a>
+  </form>
+</section>
+{% endblock %}

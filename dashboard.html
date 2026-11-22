@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Dashboard</h1>
+<p class="muted">Welcome, {{ current_user['name'] }}.</p>
+<div class="stat-grid">
+  <div class="stat"><b>{{ counts.assets_total }}</b><span>Assets tracked</span></div>
+  <div class="stat"><b>{{ counts.tickets_open }}</b><span>Open tickets</span></div>
+  <div class="stat"><b>{{ counts.tickets_mine }}</b><span>Assigned to me</span></div>
+</div>
+{% endblock %}

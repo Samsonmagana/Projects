@@ -1,0 +1,6 @@
+Flask
+Werkzeug
+python-dotenv
+Flask-WTF
+psycopg2-binary
+gunicorn

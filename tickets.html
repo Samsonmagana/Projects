@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Helpdesk Tickets</h1>
+<section class="panel">
+  <h2>Log a new issue</h2>
+  <form method="post" class="row">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input name="title" placeholder="Brief summary" required>
+    <select name="priority">
+      <option value="low">Low</option><option value="medium" selected>Medium</option>
+      <option value="high">High</option><option value="urgent">Urgent</option>
+    </select>
+    <select name="asset_id">
+      <option value="">No specific asset</option>
+      {% for a in assets %}<option value="{{ a['id'] }}">{{ a['tag'] }} ({{ a['model'] }})</option>{% endfor %}
+    </select>
+    <input name="description" placeholder="Details (optional)">
+    <button class="btn" type="submit">Create Ticket</button>
+  </form>
+</section>
+<section class="panel">
+  <table>
+    <thead><tr><th>ID</th><th>Status</th><th>Priority</th><th>Title</th><th>Asset</th><th>Created By</th><th>Assigned To</th></tr></thead>
+    <tbody>
+      {% for t in tickets %}
+      <tr>
+        <td><a href="{{ url_for('ticket_detail', id=t['id']) }}">#{{ t['id'] }}</a></td>
+        <td><span class="pill {{ t['status'] }}">{{ t['status'].replace('_',' ') }}</span></td>
+        <td>{{ t['priority'] | capitalize }}</td>
+        <td><a href="{{ url_for('ticket_detail', id=t['id']) }}" style="font-weight: 600; text-decoration: none; color: var(--ink);">{{ t['title'] }}</a></td>
+        <td>{{ t['asset_tag'] or '-' }}</td>
+        <td>{{ t['created_by_name'] }}</td>
+        <td>{{ t['assigned_name'] or 'Unassigned' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
